@@ -1,0 +1,17 @@
+"Bulbasaur", 45, 49, 49, 45, "Grass";
+"Charmander", 39, 52, 43, 65, "Fire";
+"Squirtle", 44, 48, 65, 43, "Water";
+"Caterpie", 45, 30, 35, 45, "Bug";
+"Pidgey", 40, 45, 40, 56, "Flying";
+"Pikachu", 35, 55, 40, 90, "Electric";
+"Jigglypuff", 115, 45, 20, 20, "Fairy";
+"Meowth", 40, 45, 35, 90, "Normal";
+"Poliwag", 40, 50, 40, 90, "Water";
+"Abra", 25, 20, 15, 90, "Psychic";
+"Geodude", 40, 80, 100, 20, "Rock";
+"Slowpoke", 90, 65, 65, 15, "Water";
+"Snorlax", 160, 110, 65, 30, "Normal";
+"Staryu", 30, 45, 55, 85, "Water";
+"Marowak", 60, 80, 110, 45, "Ground";
+"Hitmonchan", 50, 105, 79, 76, "Fighting";
+"Koffing", 40, 65, 95, 35, "Poison";

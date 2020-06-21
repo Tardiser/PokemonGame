@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Pokemon
 {
@@ -6,11 +7,11 @@ namespace Pokemon
     class Pokemon
     {
         private int attack, defence, speed, healthPoints, exPoints, level;
-        private string pokemonType;
+        private string pokemonType, name;
         private int power = 50;
         private double modifier = 1;
         
-        public Pokemon(int att, int def, int spd, int hp, int xp, string type, int lvl = 1)
+        public Pokemon(string pname, int hp, int att, int def, int spd, string type, int xp = 0, int lvl = 1)
         {
             attack = att;
             defence = def;
@@ -19,6 +20,7 @@ namespace Pokemon
             exPoints = xp;
             pokemonType = type;
             level = lvl;
+            name = pname;
         }
 
         public int HealthPoints
@@ -37,12 +39,18 @@ namespace Pokemon
             get { return defence; }
         }
 
+        public string Name
+        {
+            get { return name; }
+        }
+
         public void Attack(Pokemon rival)
         {
             Random random = new Random();
             modifier *= random.NextDouble() * 0.15 + 0.85;
             int damage = Convert.ToInt32((((((level * 2 / 5) + 2) * power * attack / rival.DefencePoints) / 50) + 2) * modifier);
             rival.HealthPoints -= damage;
+            Console.WriteLine(name + " inflicted " +  damage + " damage to the " + rival.name + "!");
         }
     }
 
@@ -68,20 +76,62 @@ namespace Pokemon
 
     class Trainer
     {
-        private Pokemon[] pokemons;
-        private Potion[] potions;
-        private Pokeball[] pokeballs;
+        private List<Pokemon> pokemons;
+        private List<Potion> potions;
+        private List<Pokeball> pokeballs;
 
         public Trainer()
         {
 
         }
 
-        public Trainer(Pokemon[] poks, Potion[] pots, Pokeball[] pokballs)
+        public Trainer(List<Pokemon> poks, List<Potion> pots, List<Pokeball> pokballs)
         {
             pokemons = poks;
             potions = pots;
             pokeballs = pokballs;
+        }
+
+        public void addPokemon(Pokemon pokemon)
+        {
+            pokemons.Add(pokemon);
+        }
+
+        public void Encounter(Pokemon rival)
+        {
+            Pokemon pokemon = pokemons[0];
+
+            Console.WriteLine("You've encountered a Wild Pokemon!");
+            while(rival.HealthPoints > 0)
+            {
+                Console.WriteLine("What do you wanna do? (1 - Fight, 2 - Use Item, 3 - Change Pokemon): ");
+                string choice = Console.ReadLine();
+                if (choice.Equals("1"))
+                {
+
+                    pokemon.Attack(rival);
+                    if(rival.HealthPoints <= 0)
+                    {
+                        break;
+                    }
+
+                }
+                else if (choice.Equals("2"))
+                {
+                    UseItem();
+                }
+                else
+                {
+                    Console.WriteLine("Choose your Pokemon: ");
+                    for(int i = 0; i < pokemons.Count; i++) {
+                        Console.WriteLine(i + 1 + " - " + pokemons[i].Name);
+                    }
+                    pokemon = pokemons[int.Parse(Console.ReadLine()) - 1];
+                }
+
+                rival.Attack(pokemon);
+            }
+            
         }
 
         public void UseItem()
@@ -97,28 +147,43 @@ namespace Pokemon
         }
     }
 
+    class Game
+    {
+        string trainerName;
+
+        public void NewGame(Pokemon[] startingPokemons, Trainer trainer)
+        {
+            Console.WriteLine("Please, enter your trainer's name: ");
+            trainerName = Console.ReadLine();
+
+            Console.WriteLine("Please, choose a Pokemon (1 - Bulbasaur, 2 - Charmander, 3 - Squirtle): ");
+            
+        
+        }
+    }
+
 
     class Program
     {
         static void Main(string[] args)
         {
-            Pokemon pika = new Pokemon(10,10,5,10,10,"electric");
+            Pokemon pika = new Pokemon("Pikachu", 10, 10, 5, 10, "electric");
             Console.WriteLine(pika.HealthPoints);
             Potion potion = new Potion(20);
             Pokeball pokeball = new Pokeball();
-            Pokemon[] pokemons = { pika };
-            Potion[] potions = { potion };
-            Pokeball[] pokeballs = { pokeball };
+            List<Pokemon> pokemons = new List<Pokemon>{ pika };
+            List<Potion> potions = new List<Potion>{ potion };
+            List<Pokeball> pokeballs = new List<Pokeball>{ pokeball };
             Trainer erdem = new Trainer(pokemons, potions, pokeballs);
             erdem.UseItem();
             Console.WriteLine(pika.HealthPoints);
             Console.WriteLine("Hello World!");
-            Pokemon wildPoke = new Pokemon(10, 10, 5, 100, 10, "fire");
+            Pokemon wildPoke = new Pokemon("Wild Pokemon", 10, 10, 5, 10, "fire");
             Console.WriteLine(wildPoke.HealthPoints);
-            pika.Attack(wildPoke);
+            erdem.Encounter(wildPoke);
             Console.WriteLine(wildPoke.HealthPoints);
-            pika.Attack(wildPoke);
-            Console.WriteLine(wildPoke.HealthPoints);
+            Console.WriteLine(pika.HealthPoints);
+            erdem.addPokemon(wildPoke);
         }
     }
 }
