@@ -6,10 +6,10 @@ namespace Pokemon
 {
     class Trainer
     {
-        private string name;
-        private List<Pokemon> pokemons = new List<Pokemon> { };
         private List<Potion> potions = new List<Potion> { };
         private List<Pokeball> pokeballs = new List<Pokeball> { };
+
+        public int Gold { get; set; } = 100;
 
         public Trainer()
         {
@@ -18,27 +18,20 @@ namespace Pokemon
 
         public Trainer(List<Pokemon> poks, List<Potion> pots, List<Pokeball> pokballs)
         {
-            pokemons = poks;
+            Pokemons = poks;
             potions = pots;
             pokeballs = pokballs;
         }
 
-        public string Name
-        {
-            get { return name; }
-            set { name = value; }
-        }
+        public string Name { get; set; }
 
-        public List<Pokemon> Pokemons
-        {
-            get { return pokemons; }
-        }
+        public List<Pokemon> Pokemons { get; } = new List<Pokemon> { };
 
         public void addPokemon(Pokemon pokemon, int index)
         {
-            if (pokemons.Count < 6)
+            if (Pokemons.Count < 6)
             {
-                pokemons.Add(pokemon);
+                Pokemons.Add(pokemon);
             }
             else
             {
@@ -74,7 +67,7 @@ namespace Pokemon
 
         public void Journey()
         {
-            Console.WriteLine("What do you wanna do now?");
+            Console.WriteLine("\nWhat do you wanna do now?");
             Console.WriteLine("1 - Wander around the Country");
             Console.WriteLine("2 - Go to PokeCenter");
             Console.WriteLine("3 - Save and Quit");
@@ -85,7 +78,7 @@ namespace Pokemon
             }
             else if (choice.Equals(2))
             {
-                //PokeCenter(allPokemons);
+                PokeCenter.Enter();
             }
             else
             {
@@ -107,7 +100,8 @@ namespace Pokemon
             }
             if (Program.pokemons.Count > 0)
             {
-                Encounter(Program.pokemons[random.Next(0, Program.pokemons.Count - 1)]);
+                int rand = random.Next(0, Program.pokemons.Count - 1);
+                Encounter(Program.pokemons[rand], rand);
             }
             else
             {
@@ -118,14 +112,20 @@ namespace Pokemon
 
         }
 
-        public void Encounter(Pokemon rival)
+        public void Encounter(Pokemon rival, int index)
         {
-            Pokemon pokemon = pokemons[0];
 
             Console.WriteLine("You've encountered a Wild Pokemon: " + rival.Name);
+            Console.WriteLine("Please, choose your Pokemon: ");
+            for (int i = 0; i < Pokemons.Count; i++)
+            {
+                Console.WriteLine($"{i+1} - {Pokemons[i].Name} {Pokemons[i].HealthPoints} / {Pokemons[i].BaseHealth}");
+            }
+            Pokemon pokemon = Pokemons[int.Parse(Console.ReadLine()) - 1];
+
             while (!rival.isFainted)
             {
-                Console.WriteLine("What do you wanna do? (1 - Fight, 2 - Use Item, 3 - Change Pokemon): ");
+                Console.WriteLine("\nWhat do you wanna do? (1 - Fight, 2 - Use Item, 3 - Change Pokemon): ");
                 string choice = Console.ReadLine();
                 if (choice.Equals("1"))
                 {
@@ -133,22 +133,40 @@ namespace Pokemon
                     pokemon.Attack(rival);
                     if (rival.isFainted)
                     {
+                        Console.WriteLine($"{rival.Name} is fainted! You wanna try to catch it?");
+                        Console.WriteLine("1 - Use PokeBall");
+                        Console.WriteLine("2 - Continue");
+                        if (Console.ReadLine().Equals("1"))
+                        {
+                            // Items could be another class, like inventory maybe?
+                            // You could call usePokeball method of that class in here.
+                        }
+                        else
+                        {
+                            Gold += 25;
+                            Journey();
+                        }
                         break;
                     }
 
                 }
                 else if (choice.Equals("2"))
                 {
-                    UseItem();
+                    UseItem(pokemon, rival, index);
+                    if (!rival.Wild)
+                    {
+                        Gold += 50;
+                        break;
+                    }
                 }
                 else
                 {
                     Console.WriteLine("Choose your Pokemon: ");
-                    for (int i = 0; i < pokemons.Count; i++)
+                    for (int i = 0; i < Pokemons.Count; i++)
                     {
-                        Console.WriteLine(i + 1 + " - " + pokemons[i].Name);
+                        Console.WriteLine($"{i + 1} - {Pokemons[i].Name} {Pokemons[i].HealthPoints} / {Pokemons[i].BaseHealth}");
                     }
-                    pokemon = pokemons[int.Parse(Console.ReadLine()) - 1];
+                    pokemon = Pokemons[int.Parse(Console.ReadLine()) - 1];
                 }
 
 
@@ -157,9 +175,9 @@ namespace Pokemon
                 {
                     Console.WriteLine("Your Pokemon is fainted. Please, choose another one!");
                     bool gameOver = true;
-                    for (int i = 0; i < pokemons.Count; i++)
+                    for (int i = 0; i < Pokemons.Count; i++)
                     {
-                        if (!pokemons[i].isFainted)
+                        if (!Pokemons[i].isFainted)
                         {
                             gameOver = false;
                             break;
@@ -171,27 +189,48 @@ namespace Pokemon
                         Console.WriteLine("GAME OVER!");
                         Environment.Exit(0);
                     }
-                    for (int i = 0; i < pokemons.Count; i++)
+                    for (int i = 0; i < Pokemons.Count; i++)
                     {
-                        Console.WriteLine(i + 1 + " - " + pokemons[i].Name);
+                        Console.WriteLine($"{i + 1} - {Pokemons[i].Name} {Pokemons[i].HealthPoints} / {Pokemons[i].BaseHealth}");
                     }
-                    pokemon = pokemons[int.Parse(Console.ReadLine()) - 1];
+                    pokemon = Pokemons[int.Parse(Console.ReadLine()) - 1];
                 }
             }
             Journey();
 
         }
 
-        public void UseItem()
+        public void UseItem(Pokemon pokemon, Pokemon rival, int rivalIndex)
         {
             Console.WriteLine("What do you wanna use? (1 - Potion, 2 - Pokeball): ");
 
             if (Console.ReadLine().Equals("1"))
             {
-                Console.WriteLine("Choose a potion from the inventory (1/2/3/4/5/6): ");
-                potions[Int32.Parse(Console.ReadLine()) - 1].healthPotion(pokemons[0]);
+                if (potions.Count > 0)
+                {
+                    potions[0].usePotion(pokemon);
+                    potions.RemoveAt(potions.Count - 1);
+                    Console.WriteLine($"You've got {potions.Count} potions left in your inventory!");
+                }
+                else
+                {
+                    Console.WriteLine($"You don't have any potions. You could buy one from the PokeCenter.");
+                }
+
             }
-            else { }
+            else
+            {
+                if (pokeballs.Count > 0)
+                {
+                    pokeballs[0].Catch(rival, rivalIndex);
+                    pokeballs.RemoveAt(pokeballs.Count - 1);
+                    Console.WriteLine($"You've got {pokeballs.Count} pokeballs left in your inventory!");
+                }
+                else
+                {
+                    Console.WriteLine($"You don't have any pokeballs. You could buy one from the PokeCenter.");
+                }
+            }
         }
     }
 }

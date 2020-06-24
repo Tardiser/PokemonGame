@@ -6,16 +6,15 @@ namespace Pokemon
 {
     class Potion
     {
-        private int increaseAmount;
-        public Potion(int amount)
-        {
-            increaseAmount = amount;
-        }
 
-        public void healthPotion(Pokemon pokemon)
+        public void usePotion(Pokemon pokemon)
         {
-            //pokemon.IncHP(increaseAmount);
-            pokemon.HealthPoints += increaseAmount;
+            Console.WriteLine($"Your Pokemon's HP increased by 20 points.");
+            pokemon.HealthPoints += 20;
+            if (pokemon.HealthPoints > pokemon.BaseHealth)
+            {
+                pokemon.HealthPoints = pokemon.BaseHealth;
+            }
         }
     }
 }

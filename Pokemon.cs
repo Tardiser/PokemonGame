@@ -1,34 +1,31 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Xml.XPath;
 
 namespace Pokemon
 {
     class Pokemon
     {
-        private int attack, defence, speed, healthPoints, exPoints, level;
-        private string pokemonType, name;
-        private int power = 50;
+        private int power = 50, healthPoints;
         private double modifier = 1;
-        private bool fainted = false;
 
         public Pokemon(string pname, int hp, int att, int def, int spd, string type, int xp = 0, int lvl = 1)
         {
+            BaseHealth = hp;
+            AttackPoints = att;
+            DefencePoints = def;
+            Speed = spd;
+            Xp = xp;
+            Type = type;
+            Level = lvl;
+            Name = pname;
             healthPoints = hp;
-            attack = att;
-            defence = def;
-            speed = spd;
-            exPoints = xp;
-            pokemonType = type;
-            level = lvl;
-            name = pname;
         }
 
-        public bool isFainted
-        {
-            get { return fainted; }
-        }
+        public bool isFainted { get; set; } = false;
 
+        public int BaseHealth { get; }
         public int HealthPoints
         {
             get { return healthPoints; }
@@ -38,37 +35,37 @@ namespace Pokemon
                 if (healthPoints <= 0)
                 {
                     healthPoints = 0;
-                    fainted = true;
+                    isFainted = true;
                 }
             }
         }
 
-        public int AttackPoints
-        {
-            get { return attack; }
-        }
+        public string Name { get; private set; }
 
-        public int DefencePoints
-        {
-            get { return defence; }
-        }
+        public int AttackPoints { get; private set; }
 
-        public string Name
-        {
-            get { return name; }
-        }
+        public int DefencePoints { get; private set; }
+
+        public int Speed { get; private set; }
+
+        public string Type { get; private set; }
+
+        public int Xp { get; set;}
+
+        public int Level { get; set; }
+        public bool Wild { get; set; } = true;
 
         public void Attack(Pokemon rival)
         {
             Random random = new Random();
             modifier = random.NextDouble() * 0.15 + 0.85;
-            int damage = Convert.ToInt32((((((level * 2 / 5) + 2) * power * attack / rival.DefencePoints) / 50) + 2) * modifier);
+            int damage = Convert.ToInt32((((((Level * 2 / 5) + 2) * power * AttackPoints / rival.DefencePoints) / 50) + 2) * modifier);
             rival.HealthPoints -= damage;
             Console.WriteLine("\n\n");
-            Console.WriteLine(name + " inflicted " + damage + " damage to the " + rival.name + "!");
+            Console.WriteLine(Name + " inflicted " + damage + " damage to the " + rival.Name + "!");
             Console.WriteLine("------------");
-            Console.WriteLine(name + " HP: " + healthPoints);
-            Console.WriteLine(rival.Name + " HP: " + rival.healthPoints);
+            Console.WriteLine($"{Name} HP: {HealthPoints} / {BaseHealth}");
+            Console.WriteLine($"{rival.Name} HP: {rival.HealthPoints} / {rival.BaseHealth}");
             Console.WriteLine("------------");
         }
 

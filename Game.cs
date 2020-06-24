@@ -6,12 +6,20 @@ namespace Pokemon
 {
     class Game
     {
-        Trainer trainer = new Trainer();
+        public static Trainer trainer = new Trainer();
 
         public void NewGame()
         {
             Console.WriteLine("Please, enter your trainer's name: ");
             trainer.Name = Console.ReadLine();
+
+            Potion potion = new Potion();
+            Pokeball pokeball = new Pokeball();
+            for(int i = 0; i < 3; i++)
+            {
+                trainer.addPotion(potion);
+                trainer.addPokeball(pokeball);
+            }
 
             Console.WriteLine("Please, choose a Pokemon (1 - Bulbasaur, 2 - Charmander, 3 - Squirtle): ");
             int index = int.Parse(Console.ReadLine()) - 1;
