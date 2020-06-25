@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Text;
 using System.Xml.Serialization;
@@ -51,7 +52,7 @@ namespace Pokemon
                         {
                             Game.trainer.Gold -= 25;
                             Potion potion = new Potion();
-                            Game.trainer.addPotion(potion);
+                            Game.trainer.Bag.addPotion(potion);
                         }
                         else { Console.WriteLine("You don't have enough gold!"); }
                     }
@@ -66,7 +67,7 @@ namespace Pokemon
                         {
                             Game.trainer.Gold -= 25;
                             Pokeball pokeball = new Pokeball();
-                            Game.trainer.addPokeball(pokeball);
+                            Game.trainer.Bag.addPokeball(pokeball);
                         }
                         else { Console.WriteLine("You don't have enough gold!"); }
                         
@@ -77,28 +78,31 @@ namespace Pokemon
             }
             Enter();
         }
-
+        
         public static void Healer()
         {
             Console.WriteLine($"\nYou've got {Game.trainer.Gold}G!");
             Console.WriteLine("\nWelcome to the Healer!");
             Console.WriteLine("Heal:");
-            for(int i = 0; i < Game.trainer.Pokemons.Count; i++)
+            int pokeCount = Game.trainer.Bag.Pokemons.Count;
+
+            for(int i = 0; i < pokeCount; i++)
             {
-                Console.WriteLine($"{i + 1} - {Game.trainer.Pokemons[i].Name} HP: {Game.trainer.Pokemons[i].HealthPoints} / {Game.trainer.Pokemons[i].BaseHealth} (25G)");
+                Console.WriteLine($"{i + 1} - {Game.trainer.Bag.Pokemons[i].Name} HP: {Game.trainer.Bag.Pokemons[i].HealthPoints} / {Game.trainer.Bag.Pokemons[i].BaseHealth} (25G)");
             }
-            Console.WriteLine($"{Game.trainer.Pokemons.Count} - Heal All ({Game.trainer.Pokemons.Count * 25}G)");
-            Console.WriteLine($"{Game.trainer.Pokemons.Count + 1} - Go back to the PokeCenter");
+            Console.WriteLine($"{pokeCount + 1} - Heal All ({pokeCount * 25}G)");
+            Console.WriteLine($"{pokeCount + 2} - Go back to the PokeCenter");
             int choice = int.Parse(Console.ReadLine());
-            if(choice == Game.trainer.Pokemons.Count + 1)
+            if(choice == pokeCount + 1)
             {
-                if(Game.trainer.Gold >= Game.trainer.Pokemons.Count * 25)
+                if(Game.trainer.Gold >= pokeCount * 25)
                 {
-                    for (int i = 0; i < Game.trainer.Pokemons.Count; i++)
+                    for (int i = 0; i < pokeCount; i++)
                     {
-                        Game.trainer.Pokemons[i].HealthPoints = Game.trainer.Pokemons[i].BaseHealth;
+                        Game.trainer.Bag.Pokemons[i].HealthPoints = Game.trainer.Bag.Pokemons[i].BaseHealth;
+                        Game.trainer.Bag.Pokemons[i].isFainted = false;
                     }
-                    Game.trainer.Gold -= Game.trainer.Pokemons.Count * 25;
+                    Game.trainer.Gold -= pokeCount * 25;
                     Enter();
                 }
                 else
@@ -109,7 +113,7 @@ namespace Pokemon
    
             }
 
-            else if(choice == Game.trainer.Pokemons.Count + 2)
+            else if(choice == pokeCount + 2)
             {
                 Enter();
             }
@@ -117,7 +121,8 @@ namespace Pokemon
             {
                 if(Game.trainer.Gold >= 25)
                 {
-                    Game.trainer.Pokemons[choice - 1].HealthPoints = Game.trainer.Pokemons[choice - 1].BaseHealth;
+                    Game.trainer.Bag.Pokemons[choice - 1].HealthPoints = Game.trainer.Bag.Pokemons[choice - 1].BaseHealth;
+                    Game.trainer.Bag.Pokemons[choice - 1].isFainted = false;
                     Game.trainer.Gold -= 25;
                     Console.WriteLine("Pokemon healed back to max health");
                     Enter();

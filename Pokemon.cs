@@ -53,7 +53,6 @@ namespace Pokemon
         public int Xp { get; set;}
 
         public int Level { get; set; }
-        public bool Wild { get; set; } = true;
 
         public void Attack(Pokemon rival)
         {
@@ -63,10 +62,19 @@ namespace Pokemon
             rival.HealthPoints -= damage;
             Console.WriteLine("\n\n");
             Console.WriteLine(Name + " inflicted " + damage + " damage to the " + rival.Name + "!");
-            Console.WriteLine("------------");
-            Console.WriteLine($"{Name} HP: {HealthPoints} / {BaseHealth}");
-            Console.WriteLine($"{rival.Name} HP: {rival.HealthPoints} / {rival.BaseHealth}");
-            Console.WriteLine("------------");
+            Console.WriteLine("---------------------------");
+            if(Speed > rival.Speed)
+            {
+                Console.WriteLine($"{Name} HP: {HealthPoints} / {BaseHealth}");
+                Console.WriteLine($"{rival.Name} HP: {rival.HealthPoints} / {rival.BaseHealth}");
+            }
+            else
+            {
+                Console.WriteLine($"{rival.Name} HP: {rival.HealthPoints} / {rival.BaseHealth}");
+                Console.WriteLine($"{Name} HP: {HealthPoints} / {BaseHealth}");
+            }      
+            Console.WriteLine("---------------------------");
+            // System.Threading.Thread.Sleep(1000); // Commemnt out if fights are too fast
         }
 
     }

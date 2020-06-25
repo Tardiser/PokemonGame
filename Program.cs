@@ -13,7 +13,8 @@ namespace Pokemon
         {
             
             string path = @"C:\Users\Erdem\source\repos\Pokemon\Pokemon\pokemonDB.csv";
-            PokemonDB.RetrievePokemons(path, pokemons);
+            PokemonDB x = PokemonDB.getInstance();
+            x.RetrievePokemons(path, pokemons);
 
             Console.WriteLine("Pokemon1 = " + pokemons[0].Name + " Pokemon2 = " + pokemons[1].Name + " Last Pokemon = " + pokemons[pokemons.Count - 1].Name);
 

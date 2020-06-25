@@ -7,7 +7,13 @@ namespace Pokemon
 {
     class PokemonDB
     {
-        public static void RetrievePokemons(string path, List<Pokemon> pokemons)
+        // Using Singleton design pattern to obtain data from a csv file.
+        private static PokemonDB instance = new PokemonDB();
+
+        private PokemonDB() { }
+
+        public static PokemonDB getInstance() { return instance; }
+        public void RetrievePokemons(string path, List<Pokemon> pokemons)
         {
             using (TextFieldParser csvParser = new TextFieldParser(path))
             {

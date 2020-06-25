@@ -6,64 +6,11 @@ namespace Pokemon
 {
     class Trainer
     {
-        private List<Potion> potions = new List<Potion> { };
-        private List<Pokeball> pokeballs = new List<Pokeball> { };
-
-        public int Gold { get; set; } = 100;
-
-        public Trainer()
-        {
-
-        }
-
-        public Trainer(List<Pokemon> poks, List<Potion> pots, List<Pokeball> pokballs)
-        {
-            Pokemons = poks;
-            potions = pots;
-            pokeballs = pokballs;
-        }
-
         public string Name { get; set; }
+        public int Gold { get; set; } = 100;
+        public Inventory Bag { get; } = new Inventory();
 
-        public List<Pokemon> Pokemons { get; } = new List<Pokemon> { };
-
-        public void addPokemon(Pokemon pokemon, int index)
-        {
-            if (Pokemons.Count < 6)
-            {
-                Pokemons.Add(pokemon);
-            }
-            else
-            {
-                Console.WriteLine("Your bag is full! Pokemon has been sent to PokeCenter!");
-            }
-            Program.pokemons.RemoveAt(index);
-
-        }
-
-        public void addPotion(Potion potion)
-        {
-            if (potions.Count < 6)
-            {
-                potions.Add(potion);
-            }
-            else
-            {
-                Console.WriteLine("Your bag is full!");
-            }
-        }
-
-        public void addPokeball(Pokeball pokeball)
-        {
-            if (pokeballs.Count < 6)
-            {
-                pokeballs.Add(pokeball);
-            }
-            else
-            {
-                Console.WriteLine("Your bag is full!");
-            }
-        }
+        public Trainer() { }
 
         public void Journey()
         {
@@ -112,16 +59,17 @@ namespace Pokemon
 
         }
 
+        
         public void Encounter(Pokemon rival, int index)
         {
 
             Console.WriteLine("You've encountered a Wild Pokemon: " + rival.Name);
-            Console.WriteLine("Please, choose your Pokemon: ");
-            for (int i = 0; i < Pokemons.Count; i++)
+            Console.WriteLine("\nPlease, choose your Pokemon: ");
+            for (int i = 0; i < Bag.Pokemons.Count; i++)
             {
-                Console.WriteLine($"{i+1} - {Pokemons[i].Name} {Pokemons[i].HealthPoints} / {Pokemons[i].BaseHealth}");
+                Console.WriteLine($"{i+1} - {Bag.Pokemons[i].Name} {Bag.Pokemons[i].HealthPoints} / {Bag.Pokemons[i].BaseHealth}");
             }
-            Pokemon pokemon = Pokemons[int.Parse(Console.ReadLine()) - 1];
+            Pokemon pokemon = Bag.Pokemons[int.Parse(Console.ReadLine()) - 1];
 
             while (!rival.isFainted)
             {
@@ -129,55 +77,49 @@ namespace Pokemon
                 string choice = Console.ReadLine();
                 if (choice.Equals("1"))
                 {
-
+                    
                     pokemon.Attack(rival);
                     if (rival.isFainted)
                     {
-                        Console.WriteLine($"{rival.Name} is fainted! You wanna try to catch it?");
+                        Console.WriteLine($"{rival.Name} is fainted! Do you wanna try catching it?");
                         Console.WriteLine("1 - Use PokeBall");
                         Console.WriteLine("2 - Continue");
                         if (Console.ReadLine().Equals("1"))
                         {
-                            // Items could be another class, like inventory maybe?
-                            // You could call usePokeball method of that class in here.
+                            Bag.UsePokeball(rival, index);
                         }
                         else
                         {
                             Gold += 25;
                             Journey();
                         }
-                        break;
                     }
+                    
 
                 }
                 else if (choice.Equals("2"))
                 {
-                    UseItem(pokemon, rival, index);
-                    if (!rival.Wild)
-                    {
-                        Gold += 50;
-                        break;
-                    }
+                    Bag.UseItem(pokemon, rival, index);
                 }
                 else
                 {
                     Console.WriteLine("Choose your Pokemon: ");
-                    for (int i = 0; i < Pokemons.Count; i++)
+                    for (int i = 0; i < Bag.Pokemons.Count; i++)
                     {
-                        Console.WriteLine($"{i + 1} - {Pokemons[i].Name} {Pokemons[i].HealthPoints} / {Pokemons[i].BaseHealth}");
+                        Console.WriteLine($"{i + 1} - {Bag.Pokemons[i].Name} {Bag.Pokemons[i].HealthPoints} / {Bag.Pokemons[i].BaseHealth}");
                     }
-                    pokemon = Pokemons[int.Parse(Console.ReadLine()) - 1];
+                    pokemon = Bag.Pokemons[int.Parse(Console.ReadLine()) - 1];
                 }
 
-
+                
                 rival.Attack(pokemon);
                 if (pokemon.isFainted)
                 {
                     Console.WriteLine("Your Pokemon is fainted. Please, choose another one!");
                     bool gameOver = true;
-                    for (int i = 0; i < Pokemons.Count; i++)
+                    for (int i = 0; i < Bag.Pokemons.Count; i++)
                     {
-                        if (!Pokemons[i].isFainted)
+                        if (!Bag.Pokemons[i].isFainted)
                         {
                             gameOver = false;
                             break;
@@ -189,48 +131,17 @@ namespace Pokemon
                         Console.WriteLine("GAME OVER!");
                         Environment.Exit(0);
                     }
-                    for (int i = 0; i < Pokemons.Count; i++)
+                    for (int i = 0; i < Bag.Pokemons.Count; i++)
                     {
-                        Console.WriteLine($"{i + 1} - {Pokemons[i].Name} {Pokemons[i].HealthPoints} / {Pokemons[i].BaseHealth}");
+                        Console.WriteLine($"{i + 1} - {Bag.Pokemons[i].Name} {Bag.Pokemons[i].HealthPoints} / {Bag.Pokemons[i].BaseHealth}");
                     }
-                    pokemon = Pokemons[int.Parse(Console.ReadLine()) - 1];
+                    pokemon = Bag.Pokemons[int.Parse(Console.ReadLine()) - 1];
                 }
             }
             Journey();
 
         }
 
-        public void UseItem(Pokemon pokemon, Pokemon rival, int rivalIndex)
-        {
-            Console.WriteLine("What do you wanna use? (1 - Potion, 2 - Pokeball): ");
-
-            if (Console.ReadLine().Equals("1"))
-            {
-                if (potions.Count > 0)
-                {
-                    potions[0].usePotion(pokemon);
-                    potions.RemoveAt(potions.Count - 1);
-                    Console.WriteLine($"You've got {potions.Count} potions left in your inventory!");
-                }
-                else
-                {
-                    Console.WriteLine($"You don't have any potions. You could buy one from the PokeCenter.");
-                }
-
-            }
-            else
-            {
-                if (pokeballs.Count > 0)
-                {
-                    pokeballs[0].Catch(rival, rivalIndex);
-                    pokeballs.RemoveAt(pokeballs.Count - 1);
-                    Console.WriteLine($"You've got {pokeballs.Count} pokeballs left in your inventory!");
-                }
-                else
-                {
-                    Console.WriteLine($"You don't have any pokeballs. You could buy one from the PokeCenter.");
-                }
-            }
-        }
+        
     }
 }
