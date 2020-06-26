@@ -10,9 +10,9 @@ namespace Pokemon
         private int power = 50, healthPoints;
         private double modifier = 1;
 
-        public Pokemon(string pname, int hp, int att, int def, int spd, string type, int xp = 0, int lvl = 1)
+        public Pokemon(string pname, int basehp, int realhp, int att, int def, int spd, string type, int xp = 0, int lvl = 1, bool fainted = false)
         {
-            BaseHealth = hp;
+            BaseHealth = basehp;
             AttackPoints = att;
             DefencePoints = def;
             Speed = spd;
@@ -20,11 +20,10 @@ namespace Pokemon
             Type = type;
             Level = lvl;
             Name = pname;
-            healthPoints = hp;
+            healthPoints = realhp;
         }
 
-        public bool isFainted { get; set; } = false;
-
+        public string Name { get; private set; }
         public int BaseHealth { get; }
         public int HealthPoints
         {
@@ -39,9 +38,6 @@ namespace Pokemon
                 }
             }
         }
-
-        public string Name { get; private set; }
-
         public int AttackPoints { get; private set; }
 
         public int DefencePoints { get; private set; }
@@ -50,9 +46,16 @@ namespace Pokemon
 
         public string Type { get; private set; }
 
-        public int Xp { get; set;}
+        public int Xp { get; set; }
 
         public int Level { get; set; }
+        public bool isFainted { get; set; } = false;
+
+        
+
+        
+
+        
 
         public void Attack(Pokemon rival)
         {
@@ -74,7 +77,51 @@ namespace Pokemon
                 Console.WriteLine($"{Name} HP: {HealthPoints} / {BaseHealth}");
             }      
             Console.WriteLine("---------------------------");
-            // System.Threading.Thread.Sleep(1000); // Commemnt out if fights are too fast
+            
+            // System.Threading.Thread.Sleep(1000); // Comment out if fights are too fast
+        }
+
+        public void WildFainted(int index)
+        {
+            Console.WriteLine($"{Name} is fainted! Do you wanna try catching it?");
+            Console.WriteLine("1 - Use PokeBall");
+            Console.WriteLine("2 - Continue");
+            if (Console.ReadLine().Equals("1"))
+            {
+                Game.trainer.Bag.UsePokeball(this, index);
+            }
+            else
+            {
+                Game.trainer.Gold += 25;
+                this.isFainted = false;
+                this.HealthPoints = this.BaseHealth;
+                Game.trainer.Journey();
+            }
+        }
+
+        public void PokemonFainted()
+        {
+            Console.WriteLine("Your Pokemon is fainted. Please, choose another one!");
+            bool gameOver = true;
+            for (int i = 0; i < Game.trainer.Bag.Pokemons.Count; i++)
+            {
+                if (!Game.trainer.Bag.Pokemons[i].isFainted)
+                {
+                    gameOver = false;
+                    break;
+                }
+            }
+            if (gameOver)
+            {
+                Console.WriteLine("All of your Pokemons are fainted!");
+                Console.WriteLine("GAME OVER!");
+                Environment.Exit(0);
+            }
+            for (int i = 0; i < Game.trainer.Bag.Pokemons.Count; i++)
+            {
+                Console.WriteLine($"{i + 1} - {Game.trainer.Bag.Pokemons[i].Name} {Game.trainer.Bag.Pokemons[i].HealthPoints} / {Game.trainer.Bag.Pokemons[i].BaseHealth}");
+            }
+            
         }
 
     }

@@ -8,7 +8,7 @@ namespace Pokemon
 {
     class PokeCenter
     {
-
+        public static List<Pokemon> StoredPokemons { get; } = new List<Pokemon> { };
         public static void Enter()
         {
             Console.WriteLine("\n--------------------------------");
@@ -40,7 +40,8 @@ namespace Pokemon
                 Console.WriteLine("\nWhat do you wanna buy?");
                 Console.WriteLine("1 - Potions");
                 Console.WriteLine("2 - Pokeballs");
-                Console.WriteLine("3 - Go back to the PokeCenter");
+                Console.WriteLine("3 - PC");
+                Console.WriteLine("4 - Go back to the PokeCenter");
 
                 string choice = Console.ReadLine();
                 if (choice.Equals("1")) 
@@ -73,6 +74,28 @@ namespace Pokemon
                         
                     }
                     else { continue; }
+                }
+                else if (choice.Equals("3"))
+                {
+                    Console.WriteLine("\nChoose the pokemon that you would like to get: ");
+                    Console.WriteLine("____________________________________________");
+                    for (int i = 0; i < StoredPokemons.Count; i++)
+                    {
+                        Console.WriteLine($"{i + 1} - {StoredPokemons[i].Name}");
+                    }
+                    int change1 = int.Parse(Console.ReadLine()) - 1;
+                    Console.WriteLine("\nChoose the Pokemon that you would like to change: ");
+                    Console.WriteLine("_____________________________________________");
+                    for(int i = 0; i < Game.trainer.Bag.Pokemons.Count; i++)
+                    {
+                        Console.WriteLine($"{i + 1} - {Game.trainer.Bag.Pokemons[i].Name}");
+                    }
+                    int change2 = int.Parse(Console.ReadLine()) - 1;
+                    StoredPokemons.Add(Game.trainer.Bag.Pokemons[change2]);
+                    Game.trainer.Bag.Pokemons.RemoveAt(change2);
+                    Game.trainer.Bag.Pokemons.Add(StoredPokemons[change1]);
+                    StoredPokemons.RemoveAt(change1);
+                    
                 }
                 else { break; }
             }

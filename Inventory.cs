@@ -26,6 +26,7 @@ namespace Pokemon
             else
             {
                 Console.WriteLine("Your bag is full! Pokemon has been sent to PokeCenter!");
+                PokeCenter.StoredPokemons.Add(pokemon);
             }
             Program.pokemons.RemoveAt(index);
 
@@ -64,6 +65,11 @@ namespace Pokemon
             else
             {
                 Console.WriteLine($"You don't have any pokeballs. You could buy one from the PokeCenter.");
+                if (rival.isFainted)
+                {
+                    rival.isFainted = false;
+                    rival.HealthPoints = rival.BaseHealth;
+                }
             }
         }
 

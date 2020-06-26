@@ -2,6 +2,9 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using CsvHelper;
+using System.IO;
+using System.Globalization;
 
 namespace Pokemon
 {
@@ -28,10 +31,11 @@ namespace Pokemon
                 while (!csvParser.EndOfData)
                 {
                     string[] fields = csvParser.ReadFields();
-                    Pokemon pokemon = new Pokemon(fields[0], int.Parse(fields[1]), int.Parse(fields[2]), int.Parse(fields[3]), int.Parse(fields[4]), fields[5]);
+                    Pokemon pokemon = new Pokemon(fields[0], int.Parse(fields[1]), int.Parse(fields[2]), int.Parse(fields[3]), int.Parse(fields[4]), int.Parse(fields[5]), fields[6]);
                     pokemons.Add(pokemon);
                 }
             }
         }
+
     }
 }
